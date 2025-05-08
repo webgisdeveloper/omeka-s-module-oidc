@@ -1,25 +1,24 @@
-# CakePHP 3
+# Composer files
+composer.phar
+vendor/
 
-/vendor/*
-/config/app.php
+# Local configs
+config/autoload/*.local.php
 
-/tmp/cache/models/*
-!/tmp/cache/models/empty
-/tmp/cache/persistent/*
-!/tmp/cache/persistent/empty
-/tmp/cache/views/*
-!/tmp/cache/views/empty
-/tmp/sessions/*
-!/tmp/sessions/empty
-/tmp/tests/*
-!/tmp/tests/empty
+# Binary gettext files
+*.mo
 
-/logs/*
-!/logs/empty
+# Data
+data/logs/
+data/cache/
+data/sessions/
+data/tmp/
+temp/
 
-# CakePHP 2
+#Doctrine 2
+data/DoctrineORMModule/Proxy/
+data/DoctrineORMModule/cache/
 
-/app/tmp/*
-/app/Config/core.php
-/app/Config/database.php
-/vendors/*
+# Legacy ZF1
+demos/
+extras/documentation
