@@ -163,7 +163,12 @@ class OIDCController extends AbstractActionController
 
         // Determine token endpoint auth method from settings, fallback to issuer-supported methods
         $authMethod = $this->settings()->get('oidc_token_endpoint_auth_method', 'client_secret_basic');
-        $supported = $issuer->getMetadata()['token_endpoint_auth_methods_supported'] ?? null;
+        // Issuer metadata is an object; use its getter to retrieve supported auth methods
+        $metadata = $issuer->getMetadata();
+        $supported = null;
+        if (is_object($metadata) && method_exists($metadata, 'getTokenEndpointAuthMethodsSupported')) {
+            $supported = $metadata->getTokenEndpointAuthMethodsSupported();
+        }
         if (is_array($supported) && !in_array($authMethod, $supported, true)) {
             $this->logger->info("OIDC: Requested token_endpoint_auth_method '{$authMethod}' not supported by issuer; falling back to '{$supported[0]}'");
             $authMethod = $supported[0];
