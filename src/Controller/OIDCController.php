@@ -63,11 +63,13 @@ class OIDCController extends AbstractActionController
         $session->nonce = $nonce;
 
         //Use this uri to redirect the user for authN
+        // Scopes are configurable; default to basic OIDC scopes
+        $requestedScopes = $this->settings()->get('oidc_scopes', 'openid email');
         $redirectAuthorizationUri = $authorizationService->getAuthorizationUri(
             $client,
             [
                 'login_hint' => 'username@example.com',
-                'scope' => 'openid email',
+                'scope' => $requestedScopes,
                 'nonce' => $nonce,
                 'state' => $state,
 
@@ -159,10 +161,18 @@ class OIDCController extends AbstractActionController
 	    $clientId = $config['oidc']['client_id'];
 	    $clientSecret = $config['oidc']['client_secret'];
 
+        // Determine token endpoint auth method from settings, fallback to issuer-supported methods
+        $authMethod = $this->settings()->get('oidc_token_endpoint_auth_method', 'client_secret_basic');
+        $supported = $issuer->getMetadata()['token_endpoint_auth_methods_supported'] ?? null;
+        if (is_array($supported) && !in_array($authMethod, $supported, true)) {
+            $this->logger->info("OIDC: Requested token_endpoint_auth_method '{$authMethod}' not supported by issuer; falling back to '{$supported[0]}'");
+            $authMethod = $supported[0];
+        }
+
         $clientMetadata = ClientMetadata::fromArray([
             'client_id' => $clientId,
             'client_secret' => $clientSecret,
-            'token_endpoint_auth_method' => 'client_secret_basic', // the auth method for the token endpoint
+            'token_endpoint_auth_method' => $authMethod,
             'redirect_uris' => [
                     $redirect,
             ],

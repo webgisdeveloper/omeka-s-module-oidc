@@ -6,6 +6,7 @@ use Laminas\Filter\StringTrim;
 use Laminas\Filter\StripTags;
 use Laminas\Form\Element\Url;
 use Laminas\Form\Element\Text;
+use Laminas\Form\Element\Select;
 use Laminas\Form\Element\Password;
 use Omeka\Form\Element\RoleSelect;
 use Omeka\Form\Element\SiteSelect;
@@ -28,6 +29,41 @@ class OIDCForm extends Form
             'attributes' => [
                 'id' => 'oidc_discovery',
                 'required' => true,
+            ]
+        ]);
+
+        // OIDC Scopes
+        $this->add([
+            'name'    => 'oidc_scopes',
+            'type'    => Text::class,
+            'options' => [
+                'label' => 'OIDC Scopes',
+                'info'  => 'Space-separated list of scopes to request (e.g., "openid email profile roles"). Always include "openid".',
+            ],
+            'attributes' => [
+                'id' => 'oidc_scopes',
+                'required' => true,
+                'placeholder' => 'openid email profile',
+            ]
+        ]);
+
+        // Token endpoint auth method
+        $this->add([
+            'name'    => 'oidc_token_endpoint_auth_method',
+            'type'    => Select::class,
+            'options' => [
+                'label' => 'Token endpoint auth method',
+                'info'  => 'How the client authenticates to the token endpoint. If unsure, use client_secret_basic or ask your IdP admin.',
+                'value_options' => [
+                    'client_secret_basic' => 'client_secret_basic',
+                    'client_secret_post' => 'client_secret_post',
+                    'client_secret_jwt' => 'client_secret_jwt',
+                    'private_key_jwt' => 'private_key_jwt',
+                    'none' => 'none (public client)'
+                ],
+            ],
+            'attributes' => [
+                'id' => 'oidc_token_endpoint_auth_method',
             ]
         ]);
 
